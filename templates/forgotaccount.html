@@ -1,0 +1,23 @@
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="author" content="Yinka Enoch Adedokun">
+	<meta name="description" content="Simple Forgot Password Page Using HTML and CSS">
+	<meta name="keywords" content="forgot password page, basic html and css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='forgot_account.css') }}">
+	<title>Forgot Password Page - HTML + CSS</title>
+</head>
+<body>
+    <form action="/send_verification" method="post">
+        <input type="radio" id="email_option" name="verification_method" value="email">
+        <label for="email_option">Enviar código por correo electrónico</label><br>
+        
+        <input type="radio" id="phone_option" name="verification_method" value="phone">
+        <label for="phone_option">Enviar código por número de teléfono</label><br>
+        
+        <input type="text" name="user_input" placeholder="Ingresa tu correo o teléfono...">
+        
+        <input type="submit" value="Enviar código">
+      </form>
+      
+</body>

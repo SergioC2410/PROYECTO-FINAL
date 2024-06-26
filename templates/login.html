@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perfil del Usuario</title>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <h1>Bienvenido, <span id="username">{{ user['username'] }}</span></h1>
+    <p>Email: <span id="email">{{ user['email'] }}</span></p>
+    <p>Teléfono: <span id="phone">{{ user['phone'] }}</span></p>
+    <!-- Formulario para editar perfil -->
+    <form id="edit-profile-form" action="/editar_perfil" method="post">
+        <input type="hidden" name="edit-username" value="{{ user['username'] }}">
+        <input type="email" name="edit-email" value="{{ user['email'] }}">
+        <input type="tel" name="edit-phone" value="{{ user['phone'] }}">
+        <button type="submit">Actualizar Perfil</button>
+    </form>
+    <script>
+        document.querySelector("#edit-profile-form").addEventListener("submit", async function (event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            try {
+                const response = await fetch('/editar_perfil', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.text();
+                Swal.fire({
+                    icon: 'success',
+                    text: data,
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    text: 'Error al actualizar el perfil'
+                });
+            }
+        });
+    </script>
+</body>
+</html>

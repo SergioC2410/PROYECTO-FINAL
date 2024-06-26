@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Registro e Inicio de Sesión</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='python.ico') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+  <!-- Contenedor Principal -->
+  <section class="login-page">
+      <!-- Formularios de Registro e Inicio de Sesión -->
+      <section class="form">
+          <!-- Formulario de Registro -->
+          <form class="register-form" id="register-form" style="display:none;">
+              <h2>Registro</h2>
+              <div class="form">
+                  <input type="text" id="name" placeholder="" required/>   
+                  <label for="name">Nombre de Usuario</label>     
+              </div>     
+              <div class="form">
+              <input type="password" id="password" placeholder="" required/>   
+              <label for="password">Contraseña</label>
+              <i class="fa fa-eye-slash" id="togglePassword" style="cursor: pointer;"></i>
+              </div> 
+
+              <div class="form">
+              <input type="email" id="email" placeholder="" pattern="^[a-zA-Z0-9._%+-]+@(gmail\.com|outlook\.com)$" title="Ingresa un correo de Gmail o Outlook válido." required/>   
+              <label for="email">Correo Electrónico</label>
+          </div>                   
+              <input id="phone" type="tel" name="phone" placeholder="Número de Teléfono"/>
+              <div class="alert alert-info" style="display: none;"></div>
+              <button class="register" type="button" id="create_account_btn">Crear Cuenta</button>
+              <button class="randompassword" type="button" id="generate_password_btn">Generar Contraseña Segura</button>
+              <button class="google-btn">
+                  <div class="google-icon"></div>
+                  <span>Continuar con Google</span>
+              </button>         
+              <p class="message">¿Ya estás registrado? <a href="#" onclick="showLoginForm()">Iniciar sesión</a></p>
+          </form>        
+          <!-- Formulario de Inicio de Sesión -->
+          <form class="login-form" id="login-form">
+              <h2>Login</h2>
+              <div class="form">
+                  <input type="text" name="username" placeholder="" required/> 
+                  <label for="username">Nombre de Usuario</label>     
+              </div>     
+              <div class="form">
+                  <input type="password" name="password" placeholder="" required/>    
+                  <label for="login-password">Contraseña</label> 
+                  <i class="fa fa-eye-slash" id="togglePassword" style="cursor: pointer;"></i>    
+              </div>    
+              <button class="login" type="submit">                        
+                  <span class="anim-horizontal"></span>
+                  <span class="anim-vertical"></span>
+              Iniciar Sesión
+              </button>   
+              <button class="google-btn">
+                  <div class="google-icon"></div>
+                  <span>Continuar con Google</span>
+              </button>
+              <p class="message">¿No estás registrado? <a href="#" onclick="showRegisterForm()">Crea tu cuenta</a></p>
+              <p><a class="message2" href="{{ url_for('forgot_account') }}">¿Olvidaste tu contraseña?</a></p>
+          </form>
+      </section>
+  </section>   
+
+  <!-- Scripts de Funcionalidad -->
+  <script>
+// Inicialización del campo de entrada del número de teléfono
+const phoneInputField = document.querySelector("#phone");
+const phoneInput = window.intlTelInput(phoneInputField, {
+utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js",
+preferredCountries: ["ve", "es", "us"],
+});
+
+// Referencia al elemento de información
+const info = document.querySelector(".alert-info");
+
+// Función para procesar el número de teléfono
+function process(event) {
+event.preventDefault();
+const phoneNumber = phoneInput.getNumber();
+info.style.display = "block";
+info.innerHTML = `Número de teléfono en formato E.164: <strong>${phoneNumber}</strong>`;
+}
+
+// Función para mostrar notificaciones
+function showNotification(message, type) {
+Swal.fire({
+  icon: type,
+  title: type === 'error' ? 'Error' : 'Éxito',
+  text: message,
+  timer: 3000
+});
+}
+
+// Funciones para alternar entre formularios
+function showRegisterForm() {
+$('.login-form').addClass('fade-out').hide();
+$('.register-form').removeClass('fade-out').addClass('fade-in').fadeIn();
+}
+
+function showLoginForm() {
+$('.register-form').addClass('fade-out').hide();
+$('.login-form').removeClass('fade-out').addClass('fade-in').fadeIn();
+}
+document.addEventListener('DOMContentLoaded', (event) => {
+// Función para alternar la visibilidad de la contraseña
+function togglePasswordVisibility(button, passwordField) {
+    const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+    passwordField.setAttribute('type', type);
+    button.classList.toggle('fa-eye');
+    button.classList.toggle('fa-eye-slash');
+    button.classList.toggle('active'); // Agrega o quita la clase 'active'
+}
+
+// Evento de clic para el formulario de registro
+const togglePasswordRegister = document.querySelector('#register-form #togglePassword');
+const passwordRegister = document.querySelector('#register-form #password');
+if (togglePasswordRegister && passwordRegister) {
+    togglePasswordRegister.addEventListener('click', function (e) {
+        togglePasswordVisibility(this, passwordRegister);
+    });
+}
+
+// Evento de clic para el formulario de inicio de sesión
+const togglePasswordLogin = document.querySelector('#login-form #togglePassword');
+const passwordLogin = document.querySelector('#login-form input[name="password"]');
+if (togglePasswordLogin && passwordLogin) {
+    togglePasswordLogin.addEventListener('click', function (e) {
+        togglePasswordVisibility(this, passwordLogin);
+    });
+}
+});
+
+
+
+// Evento para generar contraseña segura
+$('#generate_password_btn').on('click', function() {
+$.post('/generate-password', function(data) {
+  $('#password').val(data.password).attr('type', 'text');
+  setTimeout(() => $('#password').attr('type', 'password'), 10000);
+  showNotification('Contraseña generada con éxito', 'success');
+});
+});
+
+// Evento para crear cuenta
+$('#create_account_btn').on('click', function() {
+const name = $('#name').val().trim();
+const password = $('#password').val().trim();
+const phone = phoneInput.getNumber();
+const email = $('#email').val().trim();
+
+if (!phoneInput.isValidNumber()) {
+  showNotification('Por favor, ingresa un número de teléfono válido.', 'error');
+  return;
+}
+
+$.post('/register', { name, password, phone, email }, function(data) {
+  showNotification(data.message, 'success');
+  showLoginForm();
+}).fail(function(jqXHR) {
+  showNotification(jqXHR.responseJSON.error, 'error');
+});
+});
+
+// Evento para iniciar sesión
+$('#login-form').on('submit', function(event) {
+  event.preventDefault();
+  const username = $('input[name="username"]').val().trim();
+  const password = $('input[name="password"]').val().trim();
+
+  $.ajax({
+    url: '/login',
+    type: 'POST',
+    data: { username, password },
+    success: function(data) {
+      showNotification(data.message, 'success');
+      // Redirigir al usuario a profiles.html después de un inicio de sesión exitoso
+      window.location.href = data.redirect_url;
+    },
+    error: function(jqXHR) {
+      showNotification(jqXHR.responseJSON.error, 'error');
+    }
+  });
+});
+
+// Bloquear la acción de copiar en los campos de contraseña
+$(document).ready(function() {
+$('input[type="password"]').on('copy', function(event) {
+  event.preventDefault();
+  showNotification('Copiar contraseña no está permitido.', 'error');
+});
+});
+  </script>
+  
+</body>
+</html>
+</html>
